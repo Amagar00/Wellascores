@@ -6,18 +6,21 @@ export default function LiveScores({ matches }) {
   return (
     <div className="live-scores-list">
       {matches.map((m) => (
-        <div key={m.id} className="live-score-item">
+        <div key={m.fixture.id} className="live-score-item">
           <div className="competition" style={{ fontSize: "0.8rem", opacity: 0.6 }}>
-            {m.competition.name}
+            {m.league.name} — {m.league.country}
           </div>
           <div className="match-row" style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>{m.homeTeam.shortName || m.homeTeam.name}</span>
-            <span>{m.score.fullTime.home ?? "-"} : {m.score.fullTime.away ?? "-"}</span>
-            <span>{m.awayTeam.shortName || m.awayTeam.name}</span>
+            <span>{m.teams.home.name}</span>
+            <span>{m.goals.home ?? "-"} : {m.goals.away ?? "-"}</span>
+            <span>{m.teams.away.name}</span>
           </div>
-          <div className="status" style={{ fontSize: "0.75rem", opacity: 0.5 }}>{m.status}</div>
+          <div className="status" style={{ fontSize: "0.75rem", opacity: 0.5 }}>
+            {m.fixture.status.long}
+            {m.fixture.status.elapsed ? ` (${m.fixture.status.elapsed}')` : ""}
+          </div>
         </div>
       ))}
     </div>
   );
-}
+            }
