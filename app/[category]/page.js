@@ -36,7 +36,7 @@ export default async function CategoryPage({ params }) {
         <h1>{category.label}</h1>
       </div>
 
-      {isLiveScore && <LiveScores matches={matches} />}
+      {isLiveScore && <LiveScores leagueGroups={matches} />}
 
       <div className="article-list">
         {articles.length === 0 && (
