@@ -1,18 +1,46 @@
-const TICKER_ITEMS = [
-  { label: "PL", value: "Arsenal 2-1 Chelsea", change: "67'", dir: "up" },
-  { label: "LaLiga", value: "Real Madrid 0-0 Barcelona", change: "HT", dir: "neutral" },
-  { label: "UCL", value: "Man City 3-0 PSG", change: "FT", dir: "up" },
-  { label: "Serie A", value: "Inter 1-1 Juventus", change: "78'", dir: "down" },
-  { label: "Bundesliga", value: "Bayern 4-2 Dortmund", change: "FT", dir: "up" },
-];
+import { getTodayMatches } from "@/lib/football-data";
 
-export default function Ticker() {
+const LEAGUE_LABELS = {
+  "Premier League": "PL",
+  "La Liga": "LaLiga",
+  "Bundesliga": "BL",
+  "Ligue 1": "L1",
+  "Serie A": "SA",
+  "Saudi Pro League": "SPL",
+  "MLS": "MLS",
+  "Primeira Liga": "POR",
+};
+
+export default async function Ticker() {
+  const leagueGroups = await getTodayMatches();
+
+  const items = leagueGroups.flatMap((group) =>
+    group.matches.map((m) => ({
+      label: LEAGUE_LABELS[group.name] || group.name,
+      value: `${m.teams.home.name} ${m.goals.home ?? "-"}-${m.goals.away ?? "-"} ${m.teams.away.name}`,
+      change:
+        m.fixture.status.short === "FT"
+          ? "FT"
+          : m.fixture.status.elapsed
+          ? `${m.fixture.status.elapsed}'`
+          : m.fixture.status.short,
+    }))
+  );
+
+  if (items.length === 0) {
+    return (
+      <div className="ticker">
+        <span>No live matches today</span>
+      </div>
+    );
+  }
+
   return (
     <div className="ticker">
-      {TICKER_ITEMS.map((item, i) => (
+      {items.map((item, i) => (
         <span key={i}>
           <b>{item.label}</b> {item.value}{" "}
-          <span className={item.dir}>{item.change}</span>
+          <span className="neutral">{item.change}</span>
         </span>
       ))}
     </div>
