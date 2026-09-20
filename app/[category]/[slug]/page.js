@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Masthead from "@/components/Masthead";
 import AdSlot from "@/components/AdSlot";
 import Footer from "@/components/Footer";
+import ArticleEngagement from "@/components/ArticleEngagement";
 import { getArticleBySlug, getCategory } from "@/lib/articles";
 
 export const dynamic = "force-dynamic";
@@ -53,10 +54,12 @@ export default async function ArticlePage({ params }) {
             <p key={i}>{para}</p>
           ))}
         </div>
+
+        <ArticleEngagement articleId={article.id} />
       </article>
 
       <AdSlot variant="bottom" />
       <Footer />
     </>
   );
-}
+  }
