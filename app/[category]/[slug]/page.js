@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import ArticleEngagement from "@/components/ArticleEngagement";
 import { getArticleBySlug, getCategory } from "@/lib/articles";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const article = await getArticleBySlug(params.category, params.slug);
@@ -62,4 +62,4 @@ export default async function ArticlePage({ params }) {
       <Footer />
     </>
   );
-  }
+}
