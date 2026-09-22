@@ -5,7 +5,7 @@ import AdSlot from "@/components/AdSlot";
 import Footer from "@/components/Footer";
 import { categories, getArticlesByCategory } from "@/lib/articles";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const SECTION_LABELS = [
   "Section One",
@@ -68,4 +68,4 @@ export default async function HomePage() {
       <Footer />
     </>
   );
-}
+              }
