@@ -7,7 +7,7 @@ import LiveScores from "@/components/LiveScores";
 import { getCategory, getArticlesByCategory } from "@/lib/articles";
 import { getTodayMatches } from "@/lib/football-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export function generateMetadata({ params }) {
   const category = getCategory(params.category);
