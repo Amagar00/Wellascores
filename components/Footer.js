@@ -5,6 +5,7 @@ export default function Footer() {
     <footer>
       <span>© {new Date().getFullYear()} WellaScores</span>
       <span>
+        <Link href="/about">About Us</Link> ·{" "}
         <Link href="/contact">Contact Us</Link> ·{" "}
         <Link href="/privacy-policy">Privacy Policy</Link>
       </span>
