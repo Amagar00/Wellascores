@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useEffect, useRef } from "react";
 
@@ -23,7 +23,7 @@ export default function AdBanner({ dataKey, width, height }) {
 
     const invoke = document.createElement("script");
     invoke.type = "text/javascript";
-    invoke.src = `//www.highperformanceformat.com/${dataKey}/invoke.js`;
+    invoke.src = `https://bauval.org/22/${dataKey}`;
 
     bannerRef.current.appendChild(conf);
     bannerRef.current.appendChild(invoke);
