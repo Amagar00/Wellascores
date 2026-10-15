@@ -38,14 +38,14 @@ export default async function CategoryPage({ params }) {
 
       {isLiveScore && <LiveScores leagueGroups={matches} />}
 
-      <div className="article-list">
-        {articles.length === 0 && (
-          <p style={{ opacity: 0.6 }}>No articles published here yet.</p>
-        )}
-        {articles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
-        ))}
-      </div>
+    <div className="article-list">
+  {articles.length === 0 && !isLiveScore && (
+    <p style={{ opacity: 0.6 }}>No articles published here yet.</p>
+  )}
+  {articles.map((article) => (
+    <ArticleCard key={article.id} article={article} />
+  ))}
+</div>
 
       <AdSlot variant="bottom" />
       <Footer />
