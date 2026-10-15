@@ -1,4 +1,4 @@
-import Masthead from "@/components/Masthead";
+ import Masthead from "@/components/Masthead";
 import AdSlot from "@/components/AdSlot";
 import Footer from "@/components/Footer";
 
@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
       <article className="article-page">
         <h1 className="serif">Privacy Policy</h1>
         <div className="article-body">
-          <p>Last updated: September 2026</p>
+          <p>Last updated: October 2026</p>
 
           <p>
             WellaScores ("we," "us," or "our") respects your privacy. This
@@ -40,17 +40,29 @@ export default function PrivacyPolicyPage() {
           <p>
             <strong>Cookies:</strong> This site uses cookies for basic
             functionality and analytics. If you see advertising on this
-            site, third-party vendors, including Google, may use cookies to
-            serve ads based on your prior visits to this site or other
-            websites.
+            site, third-party advertising networks — including but not
+            limited to Adsterra and, when applicable, Google AdSense — may
+            use cookies and similar technologies to serve ads based on your
+            visits to this site and other websites.
           </p>
 
-          <h3>Google Ads and Third-Party Advertising</h3>
+          <h3>Advertising</h3>
           <p>
-            We intend to display advertising on WellaScores through
-            Google AdSense and/or similar ad networks. These third-party
-            vendors use cookies to serve ads based on your visits to this
-            site and other sites on the internet. You may opt out of
+            WellaScores displays advertising through third-party ad
+            networks, including Adsterra. These networks may use cookies,
+            web beacons, or similar technologies to deliver ads and measure
+            their performance. Ad networks may collect non-personally
+            identifiable information such as your approximate location,
+            browser type, and browsing behavior to serve more relevant ads.
+          </p>
+          <p>
+            We do not control the specific ads shown by these networks or
+            the data practices of the advertisers themselves. We encourage
+            you to review the privacy policies of any third-party ad
+            network — such as{" "}
+            Adsterra's Privacy Policy
+            {" "}— for details on how they handle your data. If Google
+            AdSense is used on this site at any point, you may opt out of
             personalized advertising by visiting{" "}
             Google's Ads Settings.
           </p>
@@ -66,8 +78,8 @@ export default function PrivacyPolicyPage() {
           <p>
             We do not sell your personal information. We may share data with
             service providers who help us operate the site (such as Google
-            Analytics and Firebase, our hosting/database provider), and as
-            required by law.
+            Analytics, our advertising partners, and Firebase, our
+            hosting/database provider), and as required by law.
           </p>
 
           <h3>Children's Privacy</h3>
@@ -80,7 +92,7 @@ export default function PrivacyPolicyPage() {
           <p>
             You can choose not to submit a comment or use the contact form.
             You can control cookies through your browser settings, though
-            disabling them may affect site functionality.
+            disabling them may affect site functionality and ad display.
           </p>
 
           <h3>Changes to This Policy</h3>
