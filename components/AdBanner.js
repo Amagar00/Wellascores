@@ -1,33 +1,45 @@
  "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 
 export default function AdBanner({ dataKey, width, height }) {
-  const bannerRef = useRef(null);
+  const iframeRef = useRef(null);
 
   useEffect(() => {
-    if (!bannerRef.current) return;
-    bannerRef.current.innerHTML = "";
+    if (!iframeRef.current) return;
 
-    const conf = document.createElement("script");
-    conf.type = "text/javascript";
-    conf.innerHTML = `
-      atOptions = {
-        'key' : '${dataKey}',
-        'format' : 'iframe',
-        'height' : ${height},
-        'width' : ${width},
-        'params' : {}
-      };
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>body{margin:0;padding:0;}</style>
+        </head>
+        <body>
+          <script>
+            atOptions = {
+              'key' : '${dataKey}',
+              'format' : 'iframe',
+              'height' : ${height},
+              'width' : ${width},
+              'params' : {}
+            };
+          </script>
+          <script src="https://bauval.org/22/${dataKey}"></script>
+        </body>
+      </html>
     `;
 
-    const invoke = document.createElement("script");
-    invoke.type = "text/javascript";
-    invoke.src = `https://bauval.org/22/${dataKey}`;
-
-    bannerRef.current.appendChild(conf);
-    bannerRef.current.appendChild(invoke);
+    iframeRef.current.srcdoc = html;
   }, [dataKey, width, height]);
 
-  return <div ref={bannerRef} style={{ display: "flex", justifyContent: "center" }} />;
+  return (
+    <iframe
+      ref={iframeRef}
+      title={`ad-${dataKey}`}
+      width={width}
+      height={height}
+      style={{ border: "none", overflow: "hidden", maxWidth: "100%" }}
+      scrolling="no"
+    />
+  );
 }
