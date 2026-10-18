@@ -1,6 +1,10 @@
  export default function LiveScores({ leagueGroups }) {
   if (!leagueGroups || leagueGroups.length === 0) {
-    return <p style={{ opacity: 0.6 }}>No matches today in the top leagues.</p>;
+    return (
+      <p style={{ opacity: 0.6 }}>
+        Live scores are temporarily unavailable — check back soon.
+      </p>
+    );
   }
 
   return (
@@ -63,4 +67,4 @@
       ))}
     </div>
   );
-                  }
+}
