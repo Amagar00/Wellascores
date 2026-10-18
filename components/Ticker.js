@@ -1,4 +1,4 @@
-import { getTodayMatches } from "@/lib/football-data";
+ import { getTodayMatches } from "@/lib/football-data";
 
 const LEAGUE_LABELS = {
   "Premier League": "PL",
@@ -30,7 +30,7 @@ export default async function Ticker() {
   if (items.length === 0) {
     return (
       <div className="ticker">
-        <span>No live matches today</span>
+        <span>Live scores temporarily unavailable</span>
       </div>
     );
   }
