@@ -1,4 +1,5 @@
- import { getTodayMatches } from "@/lib/football-data";
+import Link from "next/link";
+import { getTodayMatches } from "@/lib/football-data";
 
 const LEAGUE_LABELS = {
   "Premier League": "PL",
@@ -11,38 +12,52 @@ const LEAGUE_LABELS = {
   "Primeira Liga": "POR",
 };
 
+const LIVE = ["1H", "HT", "2H", "ET", "BT", "P", "LIVE", "INT"];
+
+function statusText(f) {
+  const s = f.status.short;
+  if (LIVE.includes(s)) return s === "HT" ? "HT" : f.status.elapsed ? `${f.status.elapsed}'` : s;
+  if (s === "NS") {
+    return new Date(f.date).toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Africa/Lagos",
+    });
+  }
+  return s;
+}
+
 export default async function Ticker() {
   const leagueGroups = await getTodayMatches();
 
-  const items = leagueGroups.flatMap((group) =>
-    group.matches.map((m) => ({
-      label: LEAGUE_LABELS[group.name] || group.name,
-      value: `${m.teams.home.name} ${m.goals.home ?? "-"}-${m.goals.away ?? "-"} ${m.teams.away.name}`,
-      change:
-        m.fixture.status.short === "FT"
-          ? "FT"
-          : m.fixture.status.elapsed
-          ? `${m.fixture.status.elapsed}'`
-          : m.fixture.status.short,
-    }))
-  );
-
-  if (items.length === 0) {
-    return (
-      <div className="ticker">
-        <span>Live scores temporarily unavailable</span>
-      </div>
-    );
-  }
+  const items = leagueGroups
+    .flatMap((group) =>
+      group.matches.map((m) => ({
+        id: m.fixture.id,
+        label: LEAGUE_LABELS[group.name] || group.name,
+        home: m.teams.home.name,
+        away: m.teams.away.name,
+        score:
+          m.goals.home === null || m.goals.away === null
+            ? "v"
+            : `${m.goals.home}–${m.goals.away}`,
+        status: statusText(m.fixture),
+      }))
+    )
+    .slice(0, 24);
 
   return (
-    <div className="ticker">
-      {items.map((item, i) => (
-        <span key={i}>
-          <b>{item.label}</b> {item.value}{" "}
-          <span className="neutral">{item.change}</span>
-        </span>
-      ))}
-    </div>
+    <Link href="/live-score" className="ps-ticker" aria-label="Live scores">
+      {items.length === 0 ? (
+        <span>Live scores temporarily unavailable</span>
+      ) : (
+        items.map((it) => (
+          <span key={it.id}>
+            <span className="ps-t-st">{it.label}</span> {it.home} <b>{it.score}</b> {it.away}{" "}
+            <span className="ps-t-st">{it.status}</span>
+          </span>
+        ))
+      )}
+    </Link>
   );
 }

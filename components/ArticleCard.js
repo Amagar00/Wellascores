@@ -1,19 +1,19 @@
 import Link from "next/link";
+import { getCategory } from "@/lib/articles";
+import { fmtDate } from "@/lib/thumb";
+import Thumb from "./Thumb";
 
 export default function ArticleCard({ article }) {
+  const cat = getCategory(article.category);
+
   return (
-    <div className="article">
-      <h3>
-        <Link href={`/${article.category}/${article.slug}`}>
-          {article.title}
-        </Link>
-      </h3>
-      <p>{article.excerpt}</p>
-      {article.tag && (
-        <span className={`tag ${article.tag.type === "pos" ? "pos" : ""}`}>
-          {article.tag.label}
-        </span>
-      )}
-    </div>
+    <Link href={`/${article.category}/${article.slug}`} className="ps-card">
+      <Thumb article={article} label={cat ? cat.label : "News"} />
+      <div className="ps-body">
+        <h3>{article.title}</h3>
+        {article.excerpt ? <p>{article.excerpt}</p> : null}
+        <div className="ps-meta">{fmtDate(article.date)}</div>
+      </div>
+    </Link>
   );
 }

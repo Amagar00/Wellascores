@@ -1,31 +1,27 @@
 import Link from "next/link";
+import "../app/pitchside.css";
 import { categories } from "@/lib/articles";
 
 export default function Masthead({ activeCategory }) {
   return (
-    <>
-      <header className="masthead">
-        <Link href="/" className="brand">
-          Wella<span>Scores</span>
+    <header className="ps-top">
+      <div className="ps-bar">
+        <Link href="/" className="ps-logo" aria-label="WellaScores home">
+          <span className="ps-ball" />
+          Wella<em>Scores</em>
         </Link>
-        <div className="masthead-meta">
-          Breaking news, transfers &amp; banter — straight from the pitch
-          <br />
-          Vol. 1 — Est. 2026
-        </div>
-      </header>
-
-      <nav className="subline">
-        {categories.map((c) => (
-          <Link
-            key={c.slug}
-            href={`/${c.slug}`}
-            className={activeCategory === c.slug ? "active" : ""}
-          >
-            {c.label}
-          </Link>
-        ))}
-      </nav>
-    </>
+        <nav className="ps-nav" aria-label="Sections">
+          {categories.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/${c.slug}`}
+              aria-current={activeCategory === c.slug ? "page" : undefined}
+            >
+              {c.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
   );
 }

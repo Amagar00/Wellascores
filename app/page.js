@@ -1,20 +1,14 @@
+import Link from "next/link";
 import Masthead from "@/components/Masthead";
 import Ticker from "@/components/Ticker";
 import SectionColumn from "@/components/SectionColumn";
+import ArticleCard from "@/components/ArticleCard";
+import RisingPlayers from "@/components/RisingPlayers";
 import AdSlot from "@/components/AdSlot";
 import Footer from "@/components/Footer";
 import { categories, getArticlesByCategory } from "@/lib/articles";
 
 export const revalidate = 60;
-
-const SECTION_LABELS = [
-  "Section One",
-  "Section Two",
-  "Section Three",
-  "Section Four",
-  "Section Five",
-  "Section Six",
-];
 
 export default async function HomePage() {
   const sections = await Promise.all(
@@ -24,48 +18,44 @@ export default async function HomePage() {
     }))
   );
 
+  const latest = sections
+    .flatMap((s) => s.articles)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 6);
+
   return (
     <>
       <Masthead />
-
+      <Ticker />
       <AdSlot variant="top" />
 
-      <section className="hero">
-        <div>
-          <h1 className="serif">
-            The transfer isn&apos;t official until you&apos;ve heard it three
-            times and no two versions agree.
-          </h1>
-          <p className="hero-dek">
-            WellaScores brings you breaking news, live scores, transfer stories,
-            injury updates, and the banter — before it hits your group chat.
-          </p>
-        </div>
-        <div className="hero-figure">
-          <span className="num serif">90+3&apos;</span>
-          <p>
-            is when this weekend&apos;s biggest shock went in. Full breakdown
-            in Breaking News.
-          </p>
-        </div>
-      </section>
+      <main className="ps-main">
+        {latest.length > 0 && (
+          <section className="ps-block">
+            <div className="ps-sec">
+              <h2>Latest</h2>
+            </div>
+            <div className="ps-grid">
+              {latest.map((a) => (
+                <ArticleCard key={a.id} article={a} />
+              ))}
+            </div>
+          </section>
+        )}
 
-      <Ticker />
+        <RisingPlayers />
 
-      <section className="sections">
-        {sections.map(({ category, articles }, i) => (
-          <SectionColumn
-            key={category.slug}
-            label={SECTION_LABELS[i] ?? `Section ${i + 1}`}
-            category={category}
-            articles={articles}
-          />
+        <Link href="/live-score" className="ps-cta">
+          Today&apos;s live scores <span>See all →</span>
+        </Link>
+
+        {sections.map(({ category, articles }) => (
+          <SectionColumn key={category.slug} category={category} articles={articles} />
         ))}
-      </section>
+      </main>
 
       <AdSlot variant="bottom" />
-
       <Footer />
     </>
   );
-              }
+}

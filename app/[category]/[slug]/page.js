@@ -1,18 +1,30 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Masthead from "@/components/Masthead";
 import AdSlot from "@/components/AdSlot";
 import Footer from "@/components/Footer";
 import ArticleEngagement from "@/components/ArticleEngagement";
 import { getArticleBySlug, getCategory } from "@/lib/articles";
+import { fmtDate } from "@/lib/thumb";
+import { optimize } from "@/lib/img";
+import Thumb from "@/components/Thumb";
 
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const article = await getArticleBySlug(params.category, params.slug);
   if (!article) return {};
+  const image =
+    typeof article.image === "string" && article.image ? optimize(article.image, 1200) : null;
   return {
     title: `${article.title} — WellaScores`,
     description: article.excerpt,
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      ...(image ? { images: [image] } : {}),
+    },
+    twitter: { card: image ? "summary_large_image" : "summary" },
   };
 }
 
@@ -29,34 +41,40 @@ export default async function ArticlePage({ params }) {
   return (
     <>
       <Masthead activeCategory={category.slug} />
-
       <AdSlot variant="top" />
 
-      <article className="article-page">
-        <div className="section-label serif">{category.label}</div>
-        <h1 className="serif">{article.title}</h1>
-        <div className="article-meta">
-          {new Date(article.date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
+      <main className="ps-main ps-read">
+        <div className="ps-crumb">
+          <Link href="/">Home</Link> › <Link href={`/${category.slug}`}>{category.label}</Link>
         </div>
 
-        <div className="article-body">
-          {firstHalf.map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
+        <article>
+          <h1 className="ps-title">{article.title}</h1>
+          <div className="ps-date">{fmtDate(article.date)}</div>
 
-          {secondHalf.length > 0 && <AdSlot variant="in-article" />}
+          <Thumb
+            article={article}
+            label={category.label}
+            width={1200}
+            className="ps-th ps-hero"
+            eager
+          />
 
-          {secondHalf.map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
-        </div>
+          <div className="ps-prose">
+            {firstHalf.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
 
-        <ArticleEngagement articleId={article.id} />
-      </article>
+            {secondHalf.length > 0 && <AdSlot variant="in-article" />}
+
+            {secondHalf.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+
+          <ArticleEngagement articleId={article.id} />
+        </article>
+      </main>
 
       <AdSlot variant="bottom" />
       <Footer />

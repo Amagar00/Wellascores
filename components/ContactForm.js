@@ -9,60 +9,67 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!message.trim()) return;
     setSubmitting(true);
-    await submitContactMessage({
-      name: name.trim() || "Anonymous",
-      email: email.trim(),
-      message: message.trim(),
-    });
-    setName("");
-    setEmail("");
-    setMessage("");
+    setError("");
+    try {
+      await submitContactMessage({
+        name: name.trim() || "Anonymous",
+        email: email.trim(),
+        message: message.trim(),
+      });
+      setName("");
+      setEmail("");
+      setMessage("");
+      setSent(true);
+    } catch (err) {
+      console.error("contact:", err);
+      setError("Sorry, your message could not be sent. Please try again.");
+    }
     setSubmitting(false);
-    setSent(true);
   }
 
   if (sent) {
     return (
-      <p style={{ marginTop: "1.5rem" }}>
-        Thanks — your message has been sent. We'll get back to you if a
-        reply is needed.
+      <p className="ps-note" style={{ marginTop: 20 }}>
+        Thanks — your message has been sent. We&apos;ll get back to you if a reply is needed.
       </p>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "1.5rem", maxWidth: "480px" }}>
+    <form onSubmit={handleSubmit} style={{ marginTop: 20, maxWidth: 480 }}>
       <input
+        className="ps-input"
         type="text"
         placeholder="Your name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        style={{ display: "block", width: "100%", marginBottom: "0.75rem", padding: "0.5rem" }}
       />
       <input
+        className="ps-input"
         type="email"
         placeholder="Your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        style={{ display: "block", width: "100%", marginBottom: "0.75rem", padding: "0.5rem" }}
       />
       <textarea
+        className="ps-input"
         placeholder="Your message"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         rows={5}
         required
-        style={{ display: "block", width: "100%", marginBottom: "0.75rem", padding: "0.5rem" }}
       />
-      <button type="submit" disabled={submitting}>
+      <button className="ps-btn" type="submit" disabled={submitting}>
         {submitting ? "Sending..." : "Send Message"}
       </button>
+      {error ? <p className="ps-note" style={{ marginTop: 10 }}>{error}</p> : null}
     </form>
   );
 }

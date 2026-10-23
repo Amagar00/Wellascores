@@ -1,69 +1,59 @@
- export default function LiveScores({ leagueGroups }) {
-  if (!leagueGroups || leagueGroups.length === 0) {
+const LIVE = ["1H", "HT", "2H", "ET", "BT", "P", "LIVE", "INT"];
+const DONE = ["FT", "AET", "PEN", "AWD", "WO"];
+
+function Status({ fixture }) {
+  const s = fixture.status.short;
+  if (LIVE.includes(s)) {
+    const label = s === "HT" ? "HT" : fixture.status.elapsed ? `${fixture.status.elapsed}'` : s;
     return (
-      <p style={{ opacity: 0.6 }}>
-        Live scores are temporarily unavailable — check back soon.
-      </p>
+      <span className="ps-st live">
+        <i /> {label}
+      </span>
     );
+  }
+  if (DONE.includes(s)) return <span className="ps-st">{s}</span>;
+  if (s === "NS" || s === "TBD") {
+    const t = new Date(fixture.date).toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Africa/Lagos",
+    });
+    return <span className="ps-st">{t} WAT</span>;
+  }
+  return <span className="ps-st">{fixture.status.long}</span>;
+}
+
+export default function LiveScores({ leagueGroups }) {
+  if (!leagueGroups || leagueGroups.length === 0) {
+    return <p className="ps-empty">Live scores are temporarily unavailable — check back soon.</p>;
   }
 
   return (
-    <div className="live-scores-list">
+    <div>
       {leagueGroups.map((group) => (
-        <div key={group.id} style={{ marginBottom: "1.5rem" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>{group.name}</h3>
-          {group.matches.map((m) => (
-            <div key={m.fixture.id} style={{ marginBottom: "0.75rem" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                <span
-                  title={m.teams.home.name}
-                  style={{
-                    flex: "1 1 0",
-                    minWidth: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    textAlign: "right",
-                  }}
-                >
-                  {m.teams.home.name}
-                </span>
-                <span
-                  style={{
-                    flex: "0 0 auto",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {m.goals.home ?? "-"} : {m.goals.away ?? "-"}
-                </span>
-                <span
-                  title={m.teams.away.name}
-                  style={{
-                    flex: "1 1 0",
-                    minWidth: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    textAlign: "left",
-                  }}
-                >
-                  {m.teams.away.name}
-                </span>
+        <section key={group.id} className="ps-block">
+          <div className="ps-sec">
+            <h2>{group.name}</h2>
+          </div>
+          <div className="ps-grid">
+            {group.matches.map((m) => (
+              <div key={m.fixture.id} className="ps-score">
+                <div className="ps-lg">{m.league.name}</div>
+                <Status fixture={m.fixture} />
+                <div className="ps-teams">
+                  <div className="ps-tm">
+                    <span title={m.teams.home.name}>{m.teams.home.name}</span>
+                    <b>{m.goals.home ?? "–"}</b>
+                  </div>
+                  <div className="ps-tm">
+                    <span title={m.teams.away.name}>{m.teams.away.name}</span>
+                    <b>{m.goals.away ?? "–"}</b>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: "0.75rem", opacity: 0.5, textAlign: "center" }}>
-                {m.fixture.status.long}
-                {m.fixture.status.elapsed ? ` (${m.fixture.status.elapsed}')` : ""}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
       ))}
     </div>
   );

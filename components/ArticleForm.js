@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { categories, slugify } from "@/lib/articles";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function ArticleForm({ initial, onSubmit, submitLabel }) {
   const [title, setTitle] = useState(initial?.title || "");
@@ -11,6 +12,7 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
     initial?.category || categories[0].slug
   );
   const [excerpt, setExcerpt] = useState(initial?.excerpt || "");
+  const [image, setImage] = useState(initial?.image || "");
   const [date, setDate] = useState(
     initial?.date || new Date().toISOString().slice(0, 10)
   );
@@ -34,6 +36,7 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
       slug: slug || slugify(title),
       category,
       excerpt,
+      image: image || null,
       date,
       tag: tagLabel ? { label: tagLabel, type: tagType } : null,
       body: body
@@ -87,6 +90,12 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
           required
         />
       </label>
+
+      <ImageUpload
+        value={image}
+        onChange={setImage}
+        label="Article image (optional — JPG, PNG, WebP or animated GIF/WebP)"
+      />
 
       <label>
         Date

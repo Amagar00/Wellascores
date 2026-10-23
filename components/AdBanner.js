@@ -1,45 +1,33 @@
- "use client";
+"use client";
 
-import { useRef, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export default function AdBanner({ dataKey, width, height }) {
-  const iframeRef = useRef(null);
+// desktop / mobile: { key, width, height } (mobile may be null = show nothing on phones)
+export default function AdBanner({ desktop, mobile }) {
+  const [unit, setUnit] = useState(null);
 
   useEffect(() => {
-    if (!iframeRef.current) return;
+    const wide = window.matchMedia("(min-width: 768px)").matches;
+    setUnit(wide ? desktop : mobile);
+  }, [desktop, mobile]);
 
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>body{margin:0;padding:0;}</style>
-        </head>
-        <body>
-          <script>
-            atOptions = {
-              'key' : '${dataKey}',
-              'format' : 'iframe',
-              'height' : ${height},
-              'width' : ${width},
-              'params' : {}
-            };
-          </script>
-          <script src="https://bauval.org/22/${dataKey}"></script>
-        </body>
-      </html>
-    `;
+  if (!unit || !unit.key) return null;
 
-    iframeRef.current.srcdoc = html;
-  }, [dataKey, width, height]);
+  // Each ad lives in its own iframe so units on the same page can't overwrite each other's settings
+  const html = `<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden}</style></head><body>
+<script>atOptions={'key':'${unit.key}','format':'iframe','height':${unit.height},'width':${unit.width},'params':{}};</script>
+<script src="https://bauval.org/22/${unit.key}"></script>
+</body></html>`;
 
   return (
     <iframe
-      ref={iframeRef}
-      title={`ad-${dataKey}`}
-      width={width}
-      height={height}
-      style={{ border: "none", overflow: "hidden", maxWidth: "100%" }}
+      title="Advertisement"
+      width={unit.width}
+      height={unit.height}
       scrolling="no"
+      loading="lazy"
+      srcDoc={html}
+      style={{ border: "none", overflow: "hidden", maxWidth: "100%" }}
     />
   );
 }

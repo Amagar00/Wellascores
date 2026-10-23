@@ -21,6 +21,7 @@ export default function AdminNav() {
       <div className="admin-nav-links">
         <Link href="/admin">Dashboard</Link>
         <Link href="/admin/new">New Article</Link>
+        <Link href="/admin/players">Players</Link>
         <Link href="/" target="_blank">
           View site
         </Link>

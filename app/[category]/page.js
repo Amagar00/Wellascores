@@ -31,21 +31,29 @@ export default async function CategoryPage({ params }) {
       <Masthead activeCategory={category.slug} />
       <AdSlot variant="top" />
 
-      <div className="category-header">
-        <div className="section-label serif">Section</div>
-        <h1>{category.label}</h1>
-      </div>
+      <main className="ps-main">
+        <div className="ps-sec">
+          <h1>{category.label}</h1>
+        </div>
 
-      {isLiveScore && <LiveScores leagueGroups={matches} />}
+        {isLiveScore && <LiveScores leagueGroups={matches} />}
 
-    <div className="article-list">
-  {articles.length === 0 && !isLiveScore && (
-    <p style={{ opacity: 0.6 }}>No articles published here yet.</p>
-  )}
-  {articles.map((article) => (
-    <ArticleCard key={article.id} article={article} />
-  ))}
-</div>
+        {articles.length > 0 && isLiveScore && (
+          <div className="ps-sec">
+            <h2>Match reports</h2>
+          </div>
+        )}
+
+        {articles.length > 0 ? (
+          <div className="ps-grid">
+            {articles.map((article) => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        ) : (
+          !isLiveScore && <p className="ps-empty">No articles published here yet.</p>
+        )}
+      </main>
 
       <AdSlot variant="bottom" />
       <Footer />

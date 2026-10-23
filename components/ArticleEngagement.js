@@ -24,91 +24,84 @@ export default function ArticleEngagement({ articleId }) {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    getReactions(articleId).then(setCounts);
-    getComments(articleId).then(setComments);
+    getReactions(articleId).then(setCounts).catch((e) => console.error("reactions:", e));
+    getComments(articleId).then(setComments).catch((e) => console.error("comments:", e));
   }, [articleId]);
 
   async function handleReact(type) {
     setCounts((prev) => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
-    await incrementReaction(articleId, type);
+    try {
+      await incrementReaction(articleId, type);
+    } catch (e) {
+      console.error("react:", e);
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!text.trim()) return;
     setSubmitting(true);
-    await addComment(articleId, {
-      name: name.trim() || "Anonymous",
-      text: text.trim(),
-    });
-    setText("");
-    const updated = await getComments(articleId);
-    setComments(updated);
+    setError("");
+    try {
+      await addComment(articleId, {
+        name: name.trim() || "Anonymous",
+        text: text.trim(),
+      });
+      setText("");
+      setComments(await getComments(articleId));
+    } catch (err) {
+      console.error("comment:", err);
+      setError("Sorry, your comment could not be posted. Please try again.");
+    }
     setSubmitting(false);
   }
 
   return (
-    <div style={{ marginTop: "2rem" }}>
-      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+    <div className="ps-eng">
+      <div className="ps-react">
         {REACTIONS.map((r) => (
-          <button
-            key={r.type}
-            onClick={() => handleReact(r.type)}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "999px",
-              padding: "0.25rem 0.75rem",
-              background: "transparent",
-              cursor: "pointer",
-            }}
-          >
+          <button key={r.type} className="ps-pill" onClick={() => handleReact(r.type)}>
             {r.emoji} {counts[r.type] || 0}
           </button>
         ))}
       </div>
 
-      <div style={{ marginTop: "2rem" }}>
-        <h3 style={{ fontSize: "1.1rem", marginBottom: "0.75rem" }}>Comments</h3>
+      <h3>Comments</h3>
 
-        <form onSubmit={handleSubmit} style={{ marginBottom: "1.5rem" }}>
-          <input
-            type="text"
-            placeholder="Your name (optional)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={{ display: "block", width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-          />
-          <textarea
-            placeholder="Write a comment..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={3}
-            style={{ display: "block", width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-          />
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Posting..." : "Post Comment"}
-          </button>
-        </form>
+      <form onSubmit={handleSubmit}>
+        <input
+          className="ps-input"
+          type="text"
+          placeholder="Your name (optional)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <textarea
+          className="ps-input"
+          placeholder="Write a comment..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={3}
+        />
+        <button className="ps-btn" type="submit" disabled={submitting}>
+          {submitting ? "Posting..." : "Post Comment"}
+        </button>
+        {error ? <p className="ps-note" style={{ marginTop: 10 }}>{error}</p> : null}
+      </form>
 
-        {comments.length === 0 && (
-          <p style={{ opacity: 0.6 }}>No comments yet — be the first.</p>
-        )}
-
+      <div style={{ marginTop: 18 }}>
+        {comments.length === 0 && <p className="ps-note">No comments yet — be the first.</p>}
         {comments.map((c) => (
-          <div
-            key={c.id}
-            style={{ marginBottom: "1rem", borderBottom: "1px solid #eee", paddingBottom: "0.75rem" }}
-          >
+          <div key={c.id} className="ps-comment">
             <strong>{c.name}</strong>
-            <div style={{ fontSize: "0.75rem", opacity: 0.5 }}>
-              {new Date(c.date).toLocaleString()}
-            </div>
+            <small>{new Date(c.date).toLocaleString()}</small>
             <p>{c.text}</p>
           </div>
         ))}
       </div>
     </div>
   );
-  }
+}
