@@ -1,28 +1,48 @@
-import { optimize } from "@/lib/img";
-import { gradientStyle, initials } from "@/lib/thumb";
+ import AdBanner from "./AdBanner";
 
-// The picture block used on cards and at the top of an article:
-// the uploaded image if there is one, otherwise a generated colour with initials.
-export default function Thumb({ article, label, width = 640, className = "ps-th", eager = false }) {
-  const src =
-    typeof article.image === "string" && article.image ? optimize(article.image, width) : null;
+// A 300x250 box pushes content down a lot on a phone, so by default the TOP slot is hidden on phones.
+// Set to true to show it on every page, or pass showOnMobile to a single <AdSlot variant="top" />.
+const SHOW_TOP_AD_ON_MOBILE = false;
+
+const wide = (key) => ({ key, width: 728, height: 90 });
+const box = (key) => ({ key, width: 300, height: 250 });
+
+export default function AdSlot({ variant = "banner", showOnMobile = SHOW_TOP_AD_ON_MOBILE }) {
+  const topKey = process.env.NEXT_PUBLIC_ADSTERRA_TOP_KEY;
+  const bottomKey = process.env.NEXT_PUBLIC_ADSTERRA_BOTTOM_KEY;
+  const boxKey = process.env.NEXT_PUBLIC_ADSTERRA_INARTICLE_KEY;
+
+  let desktop;
+  let mobile;
+  let cls = "ps-ad";
+
+  if (variant === "top") {
+    desktop = wide(topKey);
+    mobile = showOnMobile ? box(boxKey) : null;
+    cls += showOnMobile ? " ps-ad-top" : " ps-ad-top ps-ad-nomobile";
+  } else if (variant === "in-article") {
+    desktop = box(boxKey);
+    mobile = box(boxKey);
+    cls += " ps-ad-in";
+  } else {
+    desktop = wide(bottomKey);
+    mobile = box(boxKey);
+    cls += " ps-ad-bottom";
+  }
+
+  const hasKeys = (desktop && desktop.key) || (mobile && mobile.key);
+
+  if (!hasKeys) {
+    return (
+      <div className="ps-ad">
+        <div className="ps-ad-ph">Ad space — {variant}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className={className} style={src ? undefined : gradientStyle(article.title)}>
-      {src ? (
-        <img
-          className="ps-img"
-          src={src}
-          alt={eager ? article.title : ""}
-          loading={eager ? "eager" : "lazy"}
-          decoding="async"
-        />
-      ) : (
-        <span className="ps-ini" aria-hidden="true">
-          {initials(article.title)}
-        </span>
-      )}
-      {label ? <span className="ps-tag">{label}</span> : null}
+    <div className={cls}>
+      <AdBanner desktop={desktop} mobile={mobile} />
     </div>
   );
 }
