@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useState } from "react";
 import { categories, slugify } from "@/lib/articles";
@@ -13,6 +13,7 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
   );
   const [excerpt, setExcerpt] = useState(initial?.excerpt || "");
   const [image, setImage] = useState(initial?.image || "");
+  const [imageCredit, setImageCredit] = useState(initial?.imageCredit || "");
   const [date, setDate] = useState(
     initial?.date || new Date().toISOString().slice(0, 10)
   );
@@ -37,6 +38,7 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
       category,
       excerpt,
       image: image || null,
+      imageCredit: imageCredit.trim() || null,
       date,
       tag: tagLabel ? { label: tagLabel, type: tagType } : null,
       body: body
@@ -98,6 +100,15 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
       />
 
       <label>
+        Photo credit (optional — shown on the image as "Photo: …")
+        <input
+          value={imageCredit}
+          onChange={(e) => setImageCredit(e.target.value)}
+          placeholder="e.g. Happiraphael / Wikimedia Commons / CC BY-SA 4.0"
+        />
+      </label>
+
+      <label>
         Date
         <input
           type="date"
@@ -140,4 +151,4 @@ export default function ArticleForm({ initial, onSubmit, submitLabel }) {
       </button>
     </form>
   );
-}
+      }
