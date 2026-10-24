@@ -8,7 +8,7 @@ export default function Masthead({ activeCategory }) {
       <div className="ps-bar">
         <Link href="/" className="ps-logo" aria-label="WellaScores home">
           <span className="ps-ball" />
-          WellaScores</em>
+          <span>Wella<em>Scores</em></span>
         </Link>
         <nav className="ps-nav" aria-label="Sections">
           {categories.map((c) => (
