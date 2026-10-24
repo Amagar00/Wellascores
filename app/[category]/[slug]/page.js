@@ -1,4 +1,4 @@
-import Link from "next/link";
+ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Masthead from "@/components/Masthead";
 import AdSlot from "@/components/AdSlot";
@@ -7,7 +7,6 @@ import ArticleEngagement from "@/components/ArticleEngagement";
 import { getArticleBySlug, getCategory } from "@/lib/articles";
 import { fmtDate } from "@/lib/thumb";
 import { optimize } from "@/lib/img";
-import Thumb from "@/components/Thumb";
 
 export const revalidate = 3600;
 
@@ -41,7 +40,7 @@ export default async function ArticlePage({ params }) {
   return (
     <>
       <Masthead activeCategory={category.slug} />
-      <AdSlot variant="top" />
+      <AdSlot variant="top" showOnMobile />
 
       <main className="ps-main ps-read">
         <div className="ps-crumb">
@@ -51,14 +50,6 @@ export default async function ArticlePage({ params }) {
         <article>
           <h1 className="ps-title">{article.title}</h1>
           <div className="ps-date">{fmtDate(article.date)}</div>
-
-          <Thumb
-            article={article}
-            label={category.label}
-            width={1200}
-            className="ps-th ps-hero"
-            eager
-          />
 
           <div className="ps-prose">
             {firstHalf.map((para, i) => (
