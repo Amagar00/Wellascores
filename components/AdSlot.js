@@ -1,48 +1,74 @@
-import AdBanner from "./AdBanner";
+ import Link from "next/link";
+import { notFound } from "next/navigation";
+import Masthead from "@/components/Masthead";
+import AdSlot from "@/components/AdSlot";
+import Footer from "@/components/Footer";
+import ArticleEngagement from "@/components/ArticleEngagement";
+import { getArticleBySlug, getCategory } from "@/lib/articles";
+import { fmtDate } from "@/lib/thumb";
+import { optimize } from "@/lib/img";
 
-// A 300x250 box pushes content down a lot on a phone, so by default the TOP slot is hidden on phones.
-// Set to true if you want it shown there too.
-const SHOW_TOP_AD_ON_MOBILE = false;
+export const revalidate = 3600;
 
-const wide = (key) => ({ key, width: 728, height: 90 });
-const box = (key) => ({ key, width: 300, height: 250 });
+export async function generateMetadata({ params }) {
+  const article = await getArticleBySlug(params.category, params.slug);
+  if (!article) return {};
+  const image =
+    typeof article.image === "string" && article.image ? optimize(article.image, 1200) : null;
+  return {
+    title: `${article.title} — WellaScores`,
+    description: article.excerpt,
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      ...(image ? { images: [image] } : {}),
+    },
+    twitter: { card: image ? "summary_large_image" : "summary" },
+  };
+}
 
-export default function AdSlot({ variant = "banner" }) {
-  const topKey = process.env.NEXT_PUBLIC_ADSTERRA_TOP_KEY;
-  const bottomKey = process.env.NEXT_PUBLIC_ADSTERRA_BOTTOM_KEY;
-  const boxKey = process.env.NEXT_PUBLIC_ADSTERRA_INARTICLE_KEY;
+export default async function ArticlePage({ params }) {
+  const article = await getArticleBySlug(params.category, params.slug);
+  if (!article) notFound();
+  const category = getCategory(article.category);
 
-  let desktop;
-  let mobile;
-  let cls = "ps-ad";
-
-  if (variant === "top") {
-    desktop = wide(topKey);
-    mobile = SHOW_TOP_AD_ON_MOBILE ? box(boxKey) : null;
-    cls += SHOW_TOP_AD_ON_MOBILE ? " ps-ad-top" : " ps-ad-top ps-ad-nomobile";
-  } else if (variant === "in-article") {
-    desktop = box(boxKey);
-    mobile = box(boxKey);
-    cls += " ps-ad-in";
-  } else {
-    desktop = wide(bottomKey);
-    mobile = box(boxKey);
-    cls += " ps-ad-bottom";
-  }
-
-  const hasKeys = (desktop && desktop.key) || (mobile && mobile.key);
-
-  if (!hasKeys) {
-    return (
-      <div className="ps-ad">
-        <div className="ps-ad-ph">Ad space — {variant}</div>
-      </div>
-    );
-  }
+  const body = article.body || [];
+  const midpoint = Math.ceil(body.length / 2);
+  const firstHalf = body.slice(0, midpoint);
+  const secondHalf = body.slice(midpoint);
 
   return (
-    <div className={cls}>
-      <AdBanner desktop={desktop} mobile={mobile} />
-    </div>
+    <>
+      <Masthead activeCategory={category.slug} />
+      <AdSlot variant="top" showOnMobile />
+
+      <main className="ps-main ps-read">
+        <div className="ps-crumb">
+          <Link href="/">Home</Link> › <Link href={`/${category.slug}`}>{category.label}</Link>
+        </div>
+
+        <article>
+          <h1 className="ps-title">{article.title}</h1>
+          <div className="ps-date">{fmtDate(article.date)}</div>
+
+          <div className="ps-prose">
+            {firstHalf.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+
+            {secondHalf.length > 0 && <AdSlot variant="in-article" />}
+
+            {secondHalf.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+
+          <ArticleEngagement articleId={article.id} />
+        </article>
+      </main>
+
+      <AdSlot variant="bottom" />
+      <Footer />
+    </>
   );
 }
